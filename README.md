@@ -29,31 +29,24 @@ writers, native Windows.
 
 ## Quickstart
 
+Requires Python 3.12; no installation. Run from the repository root in a
+POSIX shell. The new checked-in `fixtures/focus.json` is an empty state;
+copying it resets only the disposable `focus-example.json`. The same
+session is idempotent; changing its minutes is a conflict (exit 4).
+
 ```console
-$ ./app record focus.json --id s1 --date 2026-01-01 --minutes 25
+$ cp fixtures/focus.json focus-example.json
+$ python app record focus-example.json --id s1 --date 2026-01-01 --minutes 25
 {"recorded":true}
-$ ./app record focus.json --id s2 --date 2026-01-02 --minutes 50
-{"recorded":true}
-$ ./app record focus.json --id s1 --date 2026-01-01 --minutes 25
+$ python app record focus-example.json --id s1 --date 2026-01-01 --minutes 25
 {"recorded":false}
-$ ./app report focus.json --week-start 2026-01-01
-{"start":"2026-01-01","days":[{"date":"2026-01-01","sessions":1,"minutes":25},{"date":"2026-01-02","sessions":1,"minutes":50},{"date":"2026-01-03","sessions":0,"minutes":0},{"date":"2026-01-04","sessions":0,"minutes":0},{"date":"2026-01-05","sessions":0,"minutes":0},{"date":"2026-01-06","sessions":0,"minutes":0},{"date":"2026-01-07","sessions":0,"minutes":0}],"sessions":2,"minutes":75}
-$ cat focus.json
-{"sessions":[{"id":"s1","date":"2026-01-01","minutes":25},{"id":"s2","date":"2026-01-02","minutes":50}]}
+$ python app report focus-example.json --week-start 2026-01-01
+{"start":"2026-01-01","days":[{"date":"2026-01-01","sessions":1,"minutes":25},{"date":"2026-01-02","sessions":0,"minutes":0},{"date":"2026-01-03","sessions":0,"minutes":0},{"date":"2026-01-04","sessions":0,"minutes":0},{"date":"2026-01-05","sessions":0,"minutes":0},{"date":"2026-01-06","sessions":0,"minutes":0},{"date":"2026-01-07","sessions":0,"minutes":0}],"sessions":1,"minutes":25}
+$ python app record focus-example.json --id s1 --date 2026-01-01 --minutes 50
+error: session id 's1' already exists with a different date or minutes
+$ echo $?
+4
 ```
-
-`./app` (executable with shebang) and `python app` are equivalent. The tool
-never consults the clock: sessions outside the current week are perfectly valid.
-
-```console
-$ ./app --version
-offline-focus-stats 0.1.0
-$ ./app --help
-usage: app <command> [options]
-...
-```
-
-`--help` and `--version` work alone, without configuration, state file or server.
 
 ## CLI reference
 
